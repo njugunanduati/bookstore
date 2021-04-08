@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block content %}
+<table>
+    <tr>
+        <td>No.</td>
+        <td>First Name</td>
+        <td>Last Name</td>
+        <td>Email</td>
+    </tr>
+    {% for customer in customers %}
+    <tr>
+        <td>{{ customer.id }}</td>
+        <td>{{ customer.first_name }}</td>
+        <td>{{ customer.last_name }}</td>
+        <td>{{ customer.email }}</td>
+    </tr>
+    {% endfor %}
+</table>
+<div>
+     <a href="{{ url_for('add_customer') }}">Add Customer</a>
+ </div>
+{% endblock %}

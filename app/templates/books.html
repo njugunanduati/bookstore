@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block content %}
+<table>
+    <tr>
+        <td>No.</td>
+        <td>Title</td>
+        <td>Rental Fee</td>
+        <td>Author</td>
+    </tr>
+    {% for book in books %}
+    <tr>
+        <td>{{ book.id }}</td>
+        <td>{{ book.title }}</td>
+        <td>${{ book.rent_charge }}</td>
+        <td>{{ book.author }}</td>
+    </tr>
+    {% endfor %}
+</table>
+ <div>
+     <a href="{{ url_for('add_book') }}">Add Book</a>
+ </div>
+{% endblock %}

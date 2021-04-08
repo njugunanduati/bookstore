@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block content %}
+<table>
+    <tr>
+        <td>No.</td>
+        <td>First Name</td>
+        <td>Last Name</td>
+        <td>Email</td>
+    </tr>
+    {% for author in authors %}
+    <tr>
+        <td><p>{{ author.id }}</p></td>
+        <td><p>{{ author.first_name }}</p></td>
+        <td><p>{{ author.last_name }}</p></td>
+        <td><p>{{ author.email }}</p></td>
+    </tr>
+    {% endfor %}
+</table>
+<div>
+     <a href="{{ url_for('add_author') }}">Add Author</a>
+ </div>
+{% endblock %}

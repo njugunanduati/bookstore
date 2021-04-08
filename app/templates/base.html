@@ -1,15 +1,35 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-      {% if title %}
-      <title>{{ title }} - BookStore</title>
-      {% else %}
-      <title>Welcome to BookStore</title>
-      {% endif %}
+        {% if title %}
+        <title>{{ title }} - BookStore</title>
+        {% else %}
+        <title>BookStore</title>
+        {% endif %}
     </head>
     <body>
-        <div>BookStore: <a href="/index">Home</a></div>
+        <div>
+            BookStore:
+            {% if current_user.is_anonymous %}
+                <a href="{{ url_for('login') }}">Login</a>
+            {% else %}
+                <a href="{{ url_for('index') }}">Home</a>
+                <a href="{{ url_for('get_authors') }}">Authors</a>
+                <a href="{{ url_for('get_books') }}">Books</a>
+                <a href="{{ url_for('get_customers') }}">Customers</a>
+                <a href="{{ url_for('logout') }}">Logout</a>
+            {% endif %}
+        </div>
         <hr>
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <ul>
+            {% for message in messages %}
+            <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+        {% endwith %}
         {% block content %}{% endblock %}
     </body>
 </html>
