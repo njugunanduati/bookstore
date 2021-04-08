@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Hi, {{ customer.first_name }}!</h1>
+    <div><p>You have rented out the following books</b></p></div>
+    {% for book in books %}
+        <div><p>Title: {{ book.title }}</p></div>
+        <div><p>Author: {{ book.author.first_name }}  {{ book.author.last_name }}</p></div>
+        <div><p>Duration: {{ book.duration }}</p></div>
+        <div><p>Amount: {{ book.rental_fee * }}</p></div>
+    {% endfor %}
+{% endblock %}
