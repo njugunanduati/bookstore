@@ -1,6 +1,6 @@
 import pytest
 from app import app, db
-from app.models import Author, Book, User, Customer, Rental
+from app.models import Author, Book, User, Customer, Rental, BookType
 
 
 @pytest.fixture(scope='module')
@@ -40,9 +40,15 @@ def init_database(test_client):
     a2 = Author(first_name='Kenny', last_name='Gee', email='kennyg@gmail.com')
     db.session.add([a1, a2])
 
+    # Insert book type data
+    bt1 = BookType(name='Regular', rent_charge='1.5')
+    bt2 = BookType(name='Fiction', rent_charge='3.0')
+    bt3 = BookType(name='Novel', rent_charge='1.5')
+    db.session.add([bt1, bt2, bt3])
+
     # Insert book data
-    b1 = Book(title='The River Between', rent_charge=1, author=a1)
-    b2 = Book(title='The Man in the Mask', rent_charge=1, author=a2)
+    b1 = Book(title='The River Between', book_type=bt1, author=a1)
+    b2 = Book(title='The Man in the Mask', book_type=bt2, author=a2)
     db.session.add([b1, b2])
 
     # Insert customer data

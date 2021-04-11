@@ -61,10 +61,22 @@ class Author(TimestampMixin, db.Model):
         return f'Author {self.body} {self.last_name}'
 
 
+class BookType(TimestampMixin, db.Model):
+    """
+    regular, fiction and novels
+    """
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(30))
+    rent_charge = db.Column(db.Numeric(5, 2))
+
+    def __repr__(self):
+        return f'BookType {self.name}'
+
+
 class Book(TimestampMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    book_type = db.Column(db.Integer, db.ForeignKey('book_type.id'))
     title = db.Column(db.String(300))
-    rent_charge = db.Column(db.Numeric(5, 2))
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     author = db.Column(db.Integer, db.ForeignKey('author.id'))
 
@@ -74,6 +86,14 @@ class Book(TimestampMixin, db.Model):
     def get_author(self):
         author = Author.query.filter_by(id=self.author).first()
         return f'{author.first_name} {author.last_name}'
+
+    def get_book_type(self):
+        book_type = BookType.query.filter_by(id=self.book_type).first()
+        return book_type.name
+
+    def get_rent_charge(self):
+        book_type = BookType.query.filter_by(id=self.book_type).first()
+        return book_type.rent_charge
 
 
 class Rental(TimestampMixin, db.Model):
@@ -95,9 +115,17 @@ class Rental(TimestampMixin, db.Model):
         book = Book.query.filter_by(id=self.book_id).first()
         return book.title
 
+    def get_book_type(self):
+        book = Book.query.filter_by(id=self.book_id).first()
+        return book.get_book_type()
+
+    def get_author(self):
+        book = Book.query.filter_by(id=self.book_id).first()
+        return book.get_author()
+
     def get_cost(self):
         book = Book.query.filter_by(id=self.book_id).first()
-        return book.rent_charge * self.duration
+        return book.get_rent_charge() * self.duration
 
 
 @login.user_loader

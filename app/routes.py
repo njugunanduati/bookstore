@@ -6,8 +6,8 @@ from flask_login import current_user, login_user, logout_user, login_required
 from app import app, db
 from app.email import send_password_reset_email
 from app.forms import LoginForm, BookForm, CustomerForm, AuthorForm, RegistrationForm, RentBookForm, \
-    ResetPasswordRequestForm, ResetPasswordForm
-from app.models import User, Book, Author, Customer, Rental
+    ResetPasswordRequestForm, ResetPasswordForm, BookTypeForm
+from app.models import User, Book, BookType, Author, Customer, Rental
 
 
 @app.route('/')
@@ -92,7 +92,7 @@ def index():
 @login_required
 def rent_book():
     customers = [(i.id, f'{i.first_name} {i.last_name}') for i in Customer.query.all()]
-    books = [(i.id, f'{i.title} @ ${i.rent_charge}') for i in Book.query.all()]
+    books = [(i.id, f'{i.title} @ ${i.get_rent_charge()}') for i in Book.query.all()]
     form = RentBookForm()
     form.customer.choices = customers
     form.book.choices = books
@@ -109,6 +109,28 @@ def rent_book():
     return render_template('rent_book.html', title='Rent A Book', form=form)
 
 
+@app.route('/add/book_type', methods=['GET', 'POST'])
+@login_required
+def add_book_type():
+    form = BookTypeForm()
+    if form.validate_on_submit():
+        book_type = BookType(
+            name=form.name.data,
+            rent_charge=form.rent_charge.data,
+        )
+        db.session.add(book_type)
+        db.session.commit()
+        return redirect(url_for('get_book_types'))
+    return render_template('add_book_type.html', title='Add Book', form=form)
+
+
+@app.route('/book_types')
+@login_required
+def get_book_types():
+    book_types = BookType.query.all()
+    return render_template('book_types.html', title='BookTypes', book_types=book_types)
+
+
 @app.route('/books')
 @login_required
 def get_books():
@@ -120,18 +142,42 @@ def get_books():
 @login_required
 def add_book():
     authors = [(i.id, f'{i.first_name} {i.last_name}') for i in Author.query.all()]
+    book_types = [(i.id, f'{i.name} {i.rent_charge}') for i in BookType.query.all()]
     form = BookForm()
     form.author.choices = authors
+    form.book_type.choices = book_types
     if form.validate_on_submit():
         book = Book(
             title=form.title.data,
-            rent_charge=form.rent_charge.data,
+            book_type=form.book_type.data,
             author=form.author.data
         )
         db.session.add(book)
         db.session.commit()
         return redirect(url_for('get_books'))
     return render_template('add_book.html', title='Add Book', form=form)
+
+
+@app.route('/edit/book/<id>', methods=['GET', 'POST'])
+@login_required
+def edit_book(id):
+    book = Book.query.filter_by(id=id).first()
+    authors = [(i.id, f'{i.first_name} {i.last_name}') for i in Author.query.all()]
+    book_types = [(i.id, f'{i.name} {i.rent_charge}') for i in BookType.query.all()]
+    form = BookForm()
+    form.author.choices = authors
+    form.book_type.choices = book_types
+    if form.validate_on_submit():
+        book.title = form.title.data,
+        book.book_type = form.book_type.data,
+        book.author = form.author.data
+        db.session.commit()
+        flash('Book has been updated.')
+        return redirect(url_for('get_books'))
+    book = Book.query.filter_by(id=id).first()
+    form.title.data = book.title
+    form.author.data = book.author
+    return render_template('edit_book.html', title='Save Book', form=form)
 
 
 @app.route('/authors')

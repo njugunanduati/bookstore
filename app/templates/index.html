@@ -8,6 +8,8 @@
             <td>No.</td>
             <td>Customer</td>
             <td>Book</td>
+            <td>Type of Book</td>
+            <td>Author</td>
             <td>Rent Duration</td>
             <td>Total Cost</td>
             <td>View Receipt</td>
@@ -17,6 +19,8 @@
             <td>{{ r.id }}</td>
             <td>{{ r.get_customer() }}</td>
             <td>{{ r.get_title() }}</td>
+            <td>{{ r.get_book_type() }}</td>
+            <td>{{ r.get_author() }}</td>
             <td>{{ r.duration }} days</td>
             <td>${{ r.get_cost() }}</td>
             <td><a href="{{ url_for('get_statement', id=r.id) }}">View</a></td>

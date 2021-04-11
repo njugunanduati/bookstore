@@ -52,9 +52,15 @@ class AuthorForm(FlaskForm):
 
 class BookForm(FlaskForm):
     title = StringField('Book Title', validators=[DataRequired()])
-    rent_charge = FloatField('Rent Fee', validators=[DataRequired()])
     author = SelectField("Author", coerce=int, validate_choice=False)
+    book_type = SelectField("Type", coerce=int, validate_choice=False)
     submit = SubmitField('Add Book')
+
+
+class BookTypeForm(FlaskForm):
+    name = StringField('Name', validators=[DataRequired()])
+    rent_charge = FloatField('Rent Fee', validators=[DataRequired()])
+    submit = SubmitField('Add Book Type')
 
 
 class CustomerForm(FlaskForm):
