@@ -1,9 +1,12 @@
 from flask import render_template, flash, redirect, url_for, request
 from werkzeug.urls import url_parse
+from flask_weasyprint import HTML, render_pdf
 from flask_login import current_user, login_user, logout_user, login_required
 
 from app import app, db
-from app.forms import LoginForm, BookForm, CustomerForm, AuthorForm, RegistrationForm, RentBookForm
+from app.email import send_password_reset_email
+from app.forms import LoginForm, BookForm, CustomerForm, AuthorForm, RegistrationForm, RentBookForm, \
+    ResetPasswordRequestForm, ResetPasswordForm
 from app.models import User, Book, Author, Customer, Rental
 
 
@@ -39,6 +42,37 @@ def register():
         flash('Congratulations, you are now a registered user!')
         return redirect(url_for('login'))
     return render_template('register.html', title='Register', form=form)
+
+
+@app.route('/reset_password_request', methods=['GET', 'POST'])
+def reset_password_request():
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
+    form = ResetPasswordRequestForm()
+    if form.validate_on_submit():
+        user = User.query.filter_by(email=form.email.data).first()
+        if user:
+            send_password_reset_email(user)
+        flash('Check your email for the instructions to reset your password')
+        return redirect(url_for('login'))
+    return render_template('reset_password_request.html',
+                           title='Reset Password', form=form)
+
+
+@app.route('/reset_password/<token>', methods=['GET', 'POST'])
+def reset_password(token):
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
+    user = User.verify_reset_password_token(token)
+    if not user:
+        return redirect(url_for('index'))
+    form = ResetPasswordForm()
+    if form.validate_on_submit():
+        user.set_password(form.password.data)
+        db.session.commit()
+        flash('Your password has been reset.')
+        return redirect(url_for('login'))
+    return render_template('reset_password.html', form=form)
 
 
 @app.route('/logout')
@@ -79,8 +113,6 @@ def rent_book():
 @login_required
 def get_books():
     books = Book.query.all()
-    for book in books:
-        print(book.rent_charge)
     return render_template('books.html', title='Books', books=books)
 
 
@@ -146,3 +178,18 @@ def add_customer():
         db.session.commit()
         return redirect(url_for('get_customers'))
     return render_template('add_customer.html', title='Add Customer', form=form)
+
+
+@app.route('/view/statement/<id>', methods=['GET'])
+@login_required
+def get_statement(id):
+    rental = Rental.query.filter_by(id=id).first()
+    return render_template('statement.html', title='Customer Receipt', rental=rental)
+
+
+@app.route('/print/statement/<id>', methods=['GET'])
+@login_required
+def print_statement(id):
+    rental = Rental.query.filter_by(id=id).first()
+    html = render_template('statement.html', rental=rental)
+    return render_pdf(HTML(string=html), download_filename=rental.get_customer())

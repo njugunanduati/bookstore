@@ -1,0 +1,55 @@
+{% extends 'bootstrap/base.html' %}
+
+{% block title %}
+        {{ title }}
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <h1>Statement</h1>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <p><b>Customer:</b></p>
+        </div>
+        <div class="col-md-6">
+            <p>{{rental.get_customer()}}</p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <p><b>Book</b></p>
+        </div>
+        <div class="col-md-6">
+            <p>{{rental.get_title() }}</p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <p><b>Duration</b></p>
+        </div>
+        <div class="col-md-6">
+            <p>{{ rental.duration }} days</p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <p><b>Total</b></p>
+        </div>
+        <div class="col-md-6">
+            <p>${{ rental.get_cost() }}</p>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-6">
+        <a href="{{ url_for('index') }}" class="btn btn-primary">Back</a>
+    </div>
+    <div class="col-md-6">
+        <a href="{{ url_for('print_statement', id=rental.id) }}" class="btn btn-success">Print</a>
+    </div>
+ </div>
+{% endblock %}

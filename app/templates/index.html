@@ -1,25 +1,30 @@
 {% extends "base.html" %}
 
-{% block content %}
-<table>
-    <tr>
-        <td>No.</td>
-        <td>Customer</td>
-        <td>Book</td>
-        <td>Rent Duration</td>
-        <td>Total Cost</td>
-    </tr>
-    {% for r in rentals %}
-    <tr>
-        <td>{{ r.id }}</td>
-        <td>{{ r.get_customer() }}</td>
-        <td>{{ r.get_title() }}</td>
-        <td>{{ r.duration }} days</td>
-        <td>${{ r.get_cost() }}</td>
-    </tr>
-    {% endfor %}
-</table>
-<div>
+{% block app_content %}
+<h1>Rented Books</h1>
+<div class="row">
+    <table class="table table-hover">
+        <tr>
+            <td>No.</td>
+            <td>Customer</td>
+            <td>Book</td>
+            <td>Rent Duration</td>
+            <td>Total Cost</td>
+            <td>View Receipt</td>
+        </tr>
+        {% for r in rentals %}
+        <tr>
+            <td>{{ r.id }}</td>
+            <td>{{ r.get_customer() }}</td>
+            <td>{{ r.get_title() }}</td>
+            <td>{{ r.duration }} days</td>
+            <td>${{ r.get_cost() }}</td>
+            <td><a href="{{ url_for('get_statement', id=r.id) }}">View</a></td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+<div class="row">
      <a href="{{ url_for('rent_book') }}">Rent A Book</a>
  </div>
 {% endblock %}
