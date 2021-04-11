@@ -68,11 +68,23 @@ class BookType(TimestampMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(30))
     rent_charge = db.Column(db.Numeric(5, 2))
+    custom_pricing = db.Column(db.Boolean, default=False, nullable=False)
+
+    def __repr__(self):
+        return f'BookType {self.name}'
+
+
+class CustomPricing(TimestampMixin, db.Model):
+    """
+    special pricing for the different book types
+    """
+    id = db.Column(db.Integer, primary_key=True)
+    book_type = db.Column(db.Integer, db.ForeignKey('book_type.id'))
     minimum_charge = db.Column(db.Numeric(5, 2))
     no_of_days = db.Column(db.Integer)
 
     def __repr__(self):
-        return f'BookType {self.name}'
+        return f'CustomPricing {self.name}'
 
 
 class Book(TimestampMixin, db.Model):

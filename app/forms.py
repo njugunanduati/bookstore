@@ -60,8 +60,7 @@ class BookForm(FlaskForm):
 class BookTypeForm(FlaskForm):
     name = StringField('Name', validators=[DataRequired()])
     rent_charge = FloatField('Rent Fee', validators=[DataRequired()])
-    minimum_charge = FloatField('Minimum Charge Fee', validators=[DataRequired()])
-    no_of_days = IntegerField('No Of Days', validators=[DataRequired()])
+    custom_pricing = SelectField("Custom Pricing", choices=[("False", "FALSE"), ("True", "TRUE")], validate_choice=False)
     submit = SubmitField('Add Book Type')
 
 
@@ -73,7 +72,7 @@ class CustomerForm(FlaskForm):
 
 
 class RentBookForm(FlaskForm):
-    customer = SelectField("customer", coerce=int, validate_choice=False)
+    customer = SelectField("Customer", coerce=int, validate_choice=False)
     book = SelectMultipleField("Books", coerce=int, validate_choice=False)
     duration = IntegerField('No of Days', validators=[DataRequired()])
     submit = SubmitField('Rent Book')

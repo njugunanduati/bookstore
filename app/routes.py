@@ -93,11 +93,11 @@ def index():
 def rent_book():
     customers = [(i.id, f'{i.first_name} {i.last_name}') for i in Customer.query.all()]
     books = [(i.id, f'{i.title} @ ${i.get_rent_charge()}') for i in Book.query.all()]
+    book_type = BookType.query.all
     form = RentBookForm()
     form.customer.choices = customers
     form.book.choices = books
     if form.validate_on_submit():
-        duration = form.duration.data
         for i in form.book.data:
             r = Rental(
                 customer_id=form.customer.data,
@@ -140,16 +140,14 @@ def edit_book_type(id):
     if form.validate_on_submit():
         book_type.name = form.name.data,
         book_type.rent_charge = form.rent_charge.data,
-        book_type.minimum_charge = form.minimum_charge.data
-        book_type.no_of_days = form.no_of_days.data
+        book_type.custom_pricing = form.custom_pricing.data
         db.session.commit()
         flash('Book Type has been updated.')
         return redirect(url_for('get_book_types'))
     book_type = BookType.query.filter_by(id=id).first()
     form.name.data = book_type.name
     form.rent_charge.data = book_type.rent_charge
-    form.minimum_charge.data = book_type.minimum_charge
-    form.no_of_days.data = book_type.no_of_days
+    form.custom_pricing.data = book_type.custom_pricing
     return render_template('edit_book_type.html', title='Save Book Type', form=form)
 
 
