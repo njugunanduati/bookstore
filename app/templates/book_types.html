@@ -11,13 +11,17 @@
             <td>Custom Pricing</td>
             <td></td>
         </tr>
-        {% for book in book_types %}
+        {% for bt in book_types %}
         <tr>
-            <td>{{ book.id }}</td>
-            <td>{{ book.name }}</td>
-            <td>${{ book.rent_charge }}</td>
-            <td>{{ book.custom_pricing }}</td>
-            <td><a href="{{ url_for('edit_book_type', id=book.id) }}">Edit Book Type</a></td>
+            <td>{{ bt.id }}</td>
+            <td>{{ bt.name }}</td>
+            <td>${{ bt.rent_charge }}</td>
+<!--            {% if bt.custom_pricing == False %}-->
+<!--                <td><a href="{{ url_for('add_custom_pricing', book_type_id=bt.id) }}">Set Custom Pricing</a></td>-->
+<!--            {% else %}-->
+                <td>{{ bt.custom_pricing }}</td>
+<!--             {% endif %}-->
+            <td><a href="{{ url_for('edit_book_type', id=bt.id) }}">Edit Book Type</a></td>
         </tr>
         {% endfor %}
     </table>

@@ -6,8 +6,8 @@ from flask_login import current_user, login_user, logout_user, login_required
 from app import app, db
 from app.email import send_password_reset_email
 from app.forms import LoginForm, BookForm, CustomerForm, AuthorForm, RegistrationForm, RentBookForm, \
-    ResetPasswordRequestForm, ResetPasswordForm, BookTypeForm
-from app.models import User, Book, BookType, Author, Customer, Rental
+    ResetPasswordRequestForm, ResetPasswordForm, BookTypeForm, CustomPricingForm, ConditionPricingForm
+from app.models import User, Book, BookType, Author, Customer, Rental, CustomPricing, ConditionPricing
 
 
 @app.route('/')
@@ -259,3 +259,67 @@ def print_statement(id):
     rental = Rental.query.filter_by(id=id).first()
     html = render_template('statement.html', rental=rental)
     return render_pdf(HTML(string=html), download_filename=rental.get_customer())
+
+
+@app.route('/custom/pricing')
+@login_required
+def get_custom_pricing():
+    custom_prices = CustomPricing.query.all()
+    return render_template('custom_pricing.html', title='CustomPricing', custom_prices=custom_prices)
+
+
+@app.route('/add/custom/pricing/<book_type_id>', methods=['GET', 'POST'])
+@login_required
+def add_custom_pricing(book_type_id):
+    book_type = BookType.query.filter_by(id=book_type_id).first()
+    form = CustomPricingForm()
+    if form.validate_on_submit():
+        custom_price = CustomPricing(
+            book_type=book_type.id,
+            minimum_charge=form.minimum_charge.data,
+            no_of_days=form.no_of_days.data,
+        )
+        db.session.add(custom_price)
+        db.session.commit()
+        return redirect(url_for('get_custom_pricing'))
+    return render_template('add_custom_pricing.html', title='Add Custom Pricing', form=form)
+
+
+@app.route('/edit/custom/pricing/<id>', methods=['GET', 'POST'])
+@login_required
+def edit_custom_pricing(id):
+    custom_pricing = CustomPricing.query.filter_by(id=id).first()
+    form = CustomPricingForm()
+    if form.validate_on_submit():
+        custom_pricing.book_type = form.book_type.data,
+        custom_pricing.minimum_charge = form.minimum_charge.data,
+        custom_pricing.no_of_days = form.no_of_days.data
+        db.session.commit()
+        flash('Custom Pricing has been updated.')
+        return redirect(url_for('get_book_types'))
+    custom_pricing = CustomPricing.query.filter_by(id=id).first()
+    form.name.data = custom_pricing.book_type
+    form.minimum_charge.data = custom_pricing.minimum_charge
+    form.no_of_days.data = custom_pricing.no_of_days
+    return render_template('edit_custom_pricing.html', title='Save Custom Pricing', form=form)
+
+
+@app.route('/condition/pricing')
+@login_required
+def get_condition_pricing():
+    condition_prices = ConditionPricing.query.all()
+    return render_template('conditions.html', title='CustomPricing', condition_prices=condition_prices)
+
+
+@app.route('/add/condition/pricing', methods=['GET', 'POST'])
+@login_required
+def add_condition_pricing():
+    form = ConditionPricingForm()
+    if form.validate_on_submit():
+        cp = ConditionPricing(
+            condition=form.condition.data,
+        )
+        db.session.add(cp)
+        db.session.commit()
+        return redirect(url_for('get_custom_pricing'))
+    return render_template('add_condition.html', title='Add Condition Pricing', form=form)

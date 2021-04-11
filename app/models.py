@@ -87,6 +87,17 @@ class CustomPricing(TimestampMixin, db.Model):
         return f'CustomPricing {self.name}'
 
 
+class ConditionPricing(TimestampMixin, db.Model):
+    """
+    special conditions for pricing
+    """
+    id = db.Column(db.Integer, primary_key=True)
+    condition = db.Column(db.String(300))
+
+    def __repr__(self):
+        return f'Condition {self.condition}'
+
+
 class Book(TimestampMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     book_type = db.Column(db.Integer, db.ForeignKey('book_type.id'))
@@ -139,6 +150,15 @@ class Rental(TimestampMixin, db.Model):
 
     def get_cost(self):
         book = Book.query.filter_by(id=self.book_id).first()
+        book_type = BookType.query.filter_by(id=book.book_type).first()
+        if book_type.name == 'Regular':
+            if self.duration > 2:
+                d = self.duration - 2
+                return (2 * 1) + (d * 1.5)
+            return self.duration * 2
+        if book_type.name == 'Novel':
+            if self.duration < 3:
+                return 4.5
         return book.get_rent_charge() * self.duration
 
 

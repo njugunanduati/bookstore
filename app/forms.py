@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, FloatField, SelectField, SelectMultipleField, PasswordField, BooleanField, SubmitField, \
     IntegerField
-from wtforms.validators import ValidationError, DataRequired, Email, EqualTo
+from wtforms.validators import ValidationError, DataRequired, Email, EqualTo, InputRequired
 from app.models import User
 
 
@@ -60,8 +60,20 @@ class BookForm(FlaskForm):
 class BookTypeForm(FlaskForm):
     name = StringField('Name', validators=[DataRequired()])
     rent_charge = FloatField('Rent Fee', validators=[DataRequired()])
-    custom_pricing = SelectField("Custom Pricing", choices=[("False", "FALSE"), ("True", "TRUE")], validate_choice=False)
+    custom_pricing = SelectField("Custom Pricing", choices=[(0, "FALSE"), (1, "TRUE")],
+                                 validators=[InputRequired()], coerce=lambda x: x == 'True')
     submit = SubmitField('Add Book Type')
+
+
+class CustomPricingForm(FlaskForm):
+    minimum_charge = FloatField('Rent Fee', validators=[DataRequired()])
+    no_of_days = IntegerField('No Of Days', validators=[DataRequired()])
+    submit = SubmitField('Add Book Type')
+
+
+class ConditionPricingForm(FlaskForm):
+    condition = StringField('Condition', validators=[DataRequired()])
+    submit = SubmitField('Add Condition')
 
 
 class CustomerForm(FlaskForm):

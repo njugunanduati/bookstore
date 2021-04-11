@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block app_content %}
+<h1>Custome Pricing</h1>
+<div class="row">
+    <table class="table table-hover">
+        <tr>
+            <td>No.</td>
+            <td>Book Type</td>
+            <td>Minimum Charge</td>
+            <td>No of Days</td>
+            <td></td>
+        </tr>
+        {% for cp in custom_prices %}
+        <tr>
+            <td>{{ cp.id }}</td>
+            <td>{{ cp.book_type }}</td>
+            <td>${{ cp.minimum_charge }}</td>
+            {% if book.custom_pricing == 'False %}
+                <td><a href="{{ url_for('edit_book_type', id=book.id) }}">Set Custom Pricing</a></td>
+            {% else %}
+                <td>{{ book.custom_pricing }}</td>
+            {% endif %}
+            <td><a href="{{ url_for('edit_book_type', id=book.id) }}">Edit Book Type</a></td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+<div class="row">
+     <a href="{{ url_for('add_book_type') }}">Add Book Type</a>
+ </div>
+{% endblock %}
+
