@@ -8,12 +8,18 @@
             <td>No.</td>
             <td>Name</td>
             <td>Rental Fee</td>
+            <td>Minimum Charge</td>
+            <td>No Of Days</td>
+            <td></td>
         </tr>
         {% for book in book_types %}
         <tr>
             <td>{{ book.id }}</td>
             <td>{{ book.name }}</td>
             <td>${{ book.rent_charge }}</td>
+            <td>${{ book.minimum_charge }}</td>
+            <td>{{ book.no_of_days }}</td>
+            <td><a href="{{ url_for('edit_book_type', id=book.id) }}">Edit Book Type</a></td>
         </tr>
         {% endfor %}
     </table>

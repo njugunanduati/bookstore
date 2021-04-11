@@ -97,6 +97,7 @@ def rent_book():
     form.customer.choices = customers
     form.book.choices = books
     if form.validate_on_submit():
+        duration = form.duration.data
         for i in form.book.data:
             r = Rental(
                 customer_id=form.customer.data,
@@ -109,7 +110,14 @@ def rent_book():
     return render_template('rent_book.html', title='Rent A Book', form=form)
 
 
-@app.route('/add/book_type', methods=['GET', 'POST'])
+@app.route('/book/types')
+@login_required
+def get_book_types():
+    book_types = BookType.query.all()
+    return render_template('book_types.html', title='BookTypes', book_types=book_types)
+
+
+@app.route('/add/book/type', methods=['GET', 'POST'])
 @login_required
 def add_book_type():
     form = BookTypeForm()
@@ -124,11 +132,25 @@ def add_book_type():
     return render_template('add_book_type.html', title='Add Book', form=form)
 
 
-@app.route('/book_types')
+@app.route('/edit/book/type/<id>', methods=['GET', 'POST'])
 @login_required
-def get_book_types():
-    book_types = BookType.query.all()
-    return render_template('book_types.html', title='BookTypes', book_types=book_types)
+def edit_book_type(id):
+    book_type = BookType.query.filter_by(id=id).first()
+    form = BookTypeForm()
+    if form.validate_on_submit():
+        book_type.name = form.name.data,
+        book_type.rent_charge = form.rent_charge.data,
+        book_type.minimum_charge = form.minimum_charge.data
+        book_type.no_of_days = form.no_of_days.data
+        db.session.commit()
+        flash('Book Type has been updated.')
+        return redirect(url_for('get_book_types'))
+    book_type = BookType.query.filter_by(id=id).first()
+    form.name.data = book_type.name
+    form.rent_charge.data = book_type.rent_charge
+    form.minimum_charge.data = book_type.minimum_charge
+    form.no_of_days.data = book_type.no_of_days
+    return render_template('edit_book_type.html', title='Save Book Type', form=form)
 
 
 @app.route('/books')

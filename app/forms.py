@@ -60,6 +60,8 @@ class BookForm(FlaskForm):
 class BookTypeForm(FlaskForm):
     name = StringField('Name', validators=[DataRequired()])
     rent_charge = FloatField('Rent Fee', validators=[DataRequired()])
+    minimum_charge = FloatField('Minimum Charge Fee', validators=[DataRequired()])
+    no_of_days = IntegerField('No Of Days', validators=[DataRequired()])
     submit = SubmitField('Add Book Type')
 
 
